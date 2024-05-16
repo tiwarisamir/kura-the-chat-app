@@ -19,7 +19,7 @@ const ChatList = ({
   return (
     <Stack width={w} direction={"column"}>
       {chats?.map((data, index) => {
-        const { avtar, _id, name, groupChat, members } = data;
+        const { avatar, _id, name, groupChat, members } = data;
 
         const newMessageAlert = newMessagesAlert.find(
           ({ chatId }) => chatId === _id
@@ -32,13 +32,13 @@ const ChatList = ({
             index={index}
             newMessageAlert={newMessageAlert}
             isOnline={isOnline}
-            avtar={avtar}
+            avatar={avatar}
             name={name}
             _id={_id}
             key={_id}
             groupChat={groupChat}
             sameSender={chatId === _id}
-            handelDeleteChatOpen={handelDeleteChat}
+            handelDeleteChat={handelDeleteChat}
           />
         );
       })}
