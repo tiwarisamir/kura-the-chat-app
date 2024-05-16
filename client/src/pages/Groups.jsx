@@ -4,12 +4,15 @@ import {
   Grid,
   IconButton,
   Stack,
+  TextField,
   Tooltip,
   Typography,
 } from "@mui/material";
-import React, { memo, useState } from "react";
+import React, { memo, useEffect, useState } from "react";
 import { matBlack } from "../constants/color";
 import {
+  Done as DoneIcon,
+  Edit as EditIcon,
   KeyboardBackspace as KeyboardBackspaceIcon,
   Menu as MenuIcon,
 } from "@mui/icons-material";
@@ -23,6 +26,9 @@ const Groups = () => {
   const navigate = useNavigate();
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isEdit, setIsEdit] = useState(false);
+  const [groupName, setGroupName] = useState("");
+  const [groupNameUpdatedValue, setGroupNameUpdatedValue] = useState("");
 
   const navigateBack = () => {
     navigate("/");
@@ -35,6 +41,21 @@ const Groups = () => {
   const handleMobile = () => {
     setIsMobileMenuOpen((prev) => !prev);
   };
+
+  const updateGroupName = () => {
+    setIsEdit(false);
+    console.log(groupNameUpdatedValue);
+  };
+
+  useEffect(() => {
+    setGroupName(`Group Name ${chatId}`);
+    setGroupNameUpdatedValue(`Group Name ${chatId}`);
+
+    return () => {
+      setGroupName("");
+      setGroupNameUpdatedValue("");
+    };
+  }, [chatId]);
 
   const IconBtns = (
     <>
@@ -74,6 +95,35 @@ const Groups = () => {
     </>
   );
 
+  const GroupName = (
+    <Stack
+      direction={"row"}
+      alignItems={"center"}
+      justifyContent={"center"}
+      spacing={"1rem"}
+      padding={"3rem"}
+    >
+      {isEdit ? (
+        <>
+          <TextField
+            value={groupNameUpdatedValue}
+            onChange={(e) => setGroupNameUpdatedValue(e.target.value)}
+          />
+          <IconButton onClick={updateGroupName}>
+            <DoneIcon />
+          </IconButton>
+        </>
+      ) : (
+        <>
+          <Typography variant="h4">{groupName}</Typography>
+          <IconButton onClick={() => setIsEdit(true)}>
+            <EditIcon />
+          </IconButton>
+        </>
+      )}
+    </Stack>
+  );
+
   return (
     <Grid container height={"100vh"}>
       <Grid
@@ -103,6 +153,8 @@ const Groups = () => {
         }}
       >
         {IconBtns}
+
+        {groupName && GroupName}
       </Grid>
       <Drawer
         sx={{
