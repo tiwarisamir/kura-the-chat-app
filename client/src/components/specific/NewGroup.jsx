@@ -17,8 +17,6 @@ const NewGroup = () => {
   const [members, setMembers] = useState(sampleUsers);
   const [selectedMembers, setSelectedMembers] = useState([]);
 
-  const submitHandler = () => {};
-
   const selectMemberHandler = (id) => {
     setSelectedMembers((prev) =>
       prev.includes(id)
@@ -27,6 +25,7 @@ const NewGroup = () => {
     );
   };
 
+  const submitHandler = () => {};
   const closeHandler = () => {};
 
   return (
