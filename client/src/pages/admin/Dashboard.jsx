@@ -75,14 +75,13 @@ const Dashboard = () => {
               padding: "2rem 3.5rem",
               borderRadius: "1rem",
               width: "100%",
-              maxWidth: "45rem",
-              height: "25rem",
+              maxWidth: "33rem",
             }}
           >
             <Typography margin={"2rem 0"} variant="h4">
               Last Messages
             </Typography>
-            <LineCharts />
+            <LineCharts value={[12, 6, 5, 31, 6, 24, 6]} />
           </Paper>
 
           <Paper
@@ -97,10 +96,12 @@ const Dashboard = () => {
               position: "relative",
               width: "100%",
               maxWidth: "25rem",
-              height: "25rem",
             }}
           >
-            <DoughnutChart />
+            <DoughnutChart
+              labels={["Single Chats", "Group Chats"]}
+              value={[23, 66]}
+            />
 
             <Stack
               position={"absolute"}
