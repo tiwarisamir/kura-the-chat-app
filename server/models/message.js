@@ -1,4 +1,4 @@
-import mongoose, { Schema, model } from "mongoose";
+import mongoose, { Schema, Types, model } from "mongoose";
 
 const schema = new Schema(
   {
@@ -15,7 +15,7 @@ const schema = new Schema(
         },
       },
     ],
-    Sender: {
+    sender: {
       type: Types.ObjectId,
       ref: "User",
       required: true,
