@@ -42,7 +42,7 @@ const login = TryCatch(async (req, res, next) => {
   sendToken(res, user, 200, `welcome Back, ${user.name}`);
 });
 
-const getMyProfile = TryCatch(async (req, res) => {
+const getMyProfile = TryCatch(async (req, res, next) => {
   const user = await User.findById(req.user);
 
   res.status(200).json({
@@ -51,7 +51,7 @@ const getMyProfile = TryCatch(async (req, res) => {
   });
 });
 
-const logout = TryCatch(async (req, res) => {
+const logout = TryCatch(async (req, res, next) => {
   return res
     .status(200)
     .cookie("kura-token", "", { ...cookieOptions, maxAge: 0 })
@@ -61,7 +61,7 @@ const logout = TryCatch(async (req, res) => {
     });
 });
 
-const searchUser = TryCatch(async (req, res) => {
+const searchUser = TryCatch(async (req, res, next) => {
   const { name = "" } = req.query;
 
   const myChats = await Chat.find({ groupChat: false, members: req.user });
@@ -85,7 +85,7 @@ const searchUser = TryCatch(async (req, res) => {
   });
 });
 
-const sendFriendRequest = TryCatch(async (req, res) => {
+const sendFriendRequest = TryCatch(async (req, res, next) => {
   const { userId } = req.body;
 
   const request = await Request.findOne({
@@ -110,7 +110,7 @@ const sendFriendRequest = TryCatch(async (req, res) => {
   });
 });
 
-const acceptFriendRequest = TryCatch(async (req, res) => {
+const acceptFriendRequest = TryCatch(async (req, res, next) => {
   const { requestId, accept } = req.body;
 
   const request = await Request.findById(requestId)
@@ -119,9 +119,9 @@ const acceptFriendRequest = TryCatch(async (req, res) => {
 
   if (!request) return next(new ErorrHandler("Request not found", 401));
 
-  if (request.receiver.toString() !== req.user.toString())
+  if (request.receiver._id.toString() !== req.user.toString())
     return next(
-      new ErorrHandler("YOu are not authorized to accept this request", 403)
+      new ErorrHandler("You are not authorized to accept this request", 403)
     );
 
   if (!accept) {
@@ -133,7 +133,7 @@ const acceptFriendRequest = TryCatch(async (req, res) => {
     });
   }
 
-  const members = [request.sender._id, request.reciver._id];
+  const members = [request.sender._id, request.receiver._id];
 
   await Promise.all([
     Chat.create({
@@ -148,6 +148,28 @@ const acceptFriendRequest = TryCatch(async (req, res) => {
   return res.status(200).json({
     success: true,
     message: "Friend Request Accepted",
+    senderId: request.sender._id,
+  });
+});
+
+const getAllNotifications = TryCatch(async (req, res, next) => {
+  const requests = await Request.find({ receiver: req.user }).populate(
+    "sender",
+    "name avatar"
+  );
+
+  const allRequests = requests.map(({ _id, sender }) => ({
+    _id,
+    sender: {
+      _id: sender._id,
+      name: sender.name,
+      avatar: sender.avatar.url,
+    },
+  }));
+
+  return res.status(200).json({
+    success: true,
+    allRequests,
   });
 });
 
@@ -159,4 +181,5 @@ export {
   searchUser,
   sendFriendRequest,
   acceptFriendRequest,
+  getAllNotifications,
 };
