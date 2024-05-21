@@ -6,14 +6,19 @@ import { ErorrHandler } from "../utils/utility.js";
 import { Chat } from "../models/chat.js";
 import { Request } from "../models/request.js";
 import { NEW_REQUEST, REFETCH_CHATS } from "../constants/events.js";
+import { getOtherMember } from "../lib/helper.js";
 
 // create new users
-const newUser = async (req, res) => {
+const newUser = TryCatch(async (req, res, next) => {
   const { name, username, password, bio } = req.body;
 
+  const files = req.files;
+
+  if (!files) return next(new ErorrHandler("Please Upload Avatar"));
+
   const avatar = {
-    public_id: "ds;ljs",
-    url: "a;sdkml",
+    public_id: "dsljs",
+    url: "asdkml",
   };
 
   const user = await User.create({
@@ -25,7 +30,7 @@ const newUser = async (req, res) => {
   });
 
   sendToken(res, user, 201, "User created");
-};
+});
 
 const login = TryCatch(async (req, res, next) => {
   const { username, password } = req.body;
@@ -173,6 +178,44 @@ const getAllNotifications = TryCatch(async (req, res, next) => {
   });
 });
 
+const getMyFriends = TryCatch(async (req, res, next) => {
+  const chatId = req.query.chatId;
+
+  const chats = await Chat.find({
+    members: req.user,
+    groupChat: false,
+  }).populate("members", "name avatar");
+
+  const friends = chats.map(({ members }) => {
+    const otherUser = getOtherMember(members, req.user);
+
+    return {
+      _id: otherUser._id,
+      name: otherUser.name,
+      avatar: otherUser.avatar.url,
+    };
+  });
+
+  if (chatId) {
+    const chat = await Chat.findById(chatId);
+
+    const availableFriends = friends.filter(
+      (friend) => !chat.members.includes(friend._id)
+    );
+
+    return res.status(200).json({
+      success: true,
+      friends: availableFriends,
+    });
+  } else {
+    return res.status(200).json({
+      success: true,
+      message: "else part",
+      friends,
+    });
+  }
+});
+
 export {
   login,
   newUser,
@@ -182,4 +225,5 @@ export {
   sendFriendRequest,
   acceptFriendRequest,
   getAllNotifications,
+  getMyFriends,
 };

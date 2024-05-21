@@ -13,4 +13,19 @@ const isAuth = (req, res, next) => {
   next();
 };
 
-export { isAuth };
+const isAdmin = (req, res, next) => {
+  const token = req.cookies["kura-admin-token"];
+  if (!token)
+    return next(new ErorrHandler("Only Admin can access this route", 401));
+
+  const secretKey = jwt.verify(token, process.env.JWT_SECRET);
+
+  const isMatched = secretKey === process.env.ADMIN_SECRET_KEY;
+
+  if (!isMatched)
+    return next(new ErorrHandler("IOnly Admin can access this route", 401));
+
+  next();
+};
+
+export { isAuth, isAdmin };
