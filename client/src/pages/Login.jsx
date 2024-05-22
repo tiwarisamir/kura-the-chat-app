@@ -13,6 +13,11 @@ import { CameraAlt as CameraAltIcon } from "@mui/icons-material";
 import { VisuallyHiddenInput } from "../components/styles/StyledComponents";
 import { useFileHandler, useInputValidation } from "6pp";
 import { usernameValidator } from "../utils/validators";
+import axios from "axios";
+import { SERVER } from "../constants/config";
+import { useDispatch } from "react-redux";
+import { userExists } from "../redux/reducers/auth";
+import toast from "react-hot-toast";
 
 const Login = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -26,13 +31,63 @@ const Login = () => {
   const username = useInputValidation("", usernameValidator);
   const password = useInputValidation("");
 
-  const avtar = useFileHandler("single");
+  const avatar = useFileHandler("single");
 
-  const handleLogin = (e) => {
+  const dispatch = useDispatch();
+
+  const handleLogin = async (e) => {
+    const config = {
+      withCredentials: true,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
     e.preventDefault();
+    try {
+      const { data } = await axios.post(
+        `${SERVER}/api/v1/user/login`,
+        {
+          username: username.value,
+          password: password.value,
+        },
+        config
+      );
+      dispatch(userExists(true));
+      toast.success(data.message);
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Something Went Wrong");
+    }
   };
-  const handleSignUp = (e) => {
+
+  const handleSignUp = async (e) => {
     e.preventDefault();
+
+    const config = {
+      withCredentials: true,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    };
+
+    const formData = new FormData();
+    formData.append("avatar", avatar.file);
+    formData.append("name", name.value);
+    formData.append("bio", bio.value);
+    formData.append("username", username.value);
+    formData.append("password", password.value);
+
+    try {
+      const { data } = await axios.post(
+        `${SERVER}/api/v1/user/new`,
+        formData,
+        config
+      );
+
+      dispatch(userExists(true));
+      toast.success(data.message);
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Something Went Wrong");
+    }
   };
 
   return (
@@ -121,10 +176,10 @@ const Login = () => {
                     height: "10rem",
                     objectFit: "contain",
                   }}
-                  src={avtar.preview}
+                  src={avatar.preview}
                 />
 
-                {avtar.error && (
+                {avatar.error && (
                   <Typography
                     m={"1rem auto"}
                     width={"fit-content"}
@@ -132,7 +187,7 @@ const Login = () => {
                     variant="caption"
                     color="error"
                   >
-                    {avtar.error}
+                    {avatar.error}
                   </Typography>
                 )}
 
@@ -153,7 +208,7 @@ const Login = () => {
                     <CameraAltIcon />
                     <VisuallyHiddenInput
                       type="file"
-                      onChange={avtar.changeHandler}
+                      onChange={avatar.changeHandler}
                     />
                   </>
                 </IconButton>

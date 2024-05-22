@@ -17,7 +17,7 @@ export const LayoutLoader = () => {
       </Grid>
       <Grid item xs={12} sm={8} md={5} lg={6} height={"100%"}>
         <Stack spacing={"1rem"}>
-          {Array.from({ length: 10 }).map((_, index) => (
+          {Array.from({ length: 7 }).map((_, index) => (
             <Skeleton key={index} variant="roundecd" height={"5rem"} />
           ))}
         </Stack>
