@@ -21,9 +21,13 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { SERVER } from "../../constants/config";
 import toast from "react-hot-toast";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { userNotExists } from "../../redux/reducers/auth";
-import { setIsMobile } from "../../redux/reducers/misc";
+import {
+  setIsMobile,
+  setIsNotification,
+  setIsSearch,
+} from "../../redux/reducers/misc";
 const SearchDialog = lazy(() => import("../specific/Search"));
 const NotificationsDialog = lazy(() => import("../specific/Notifications"));
 const NewGroupDialog = lazy(() => import("../specific/NewGroup"));
@@ -33,23 +37,19 @@ const Header = () => {
 
   const dispatch = useDispatch();
 
-  const [isSearch, setIsSearch] = useState(false);
+  const { isSearch, isNotification } = useSelector((state) => state.misc);
+
   const [isNewGroup, setIsNewGroup] = useState(false);
-  const [isNotification, setIsNotification] = useState(false);
 
   const handleMobile = () => dispatch(setIsMobile(true));
 
-  const openSearch = () => {
-    setIsSearch((prev) => !prev);
-  };
+  const openSearch = () => dispatch(setIsSearch(true));
 
   const openNewGroup = () => {
     setIsNewGroup((prev) => !prev);
   };
-  const openNotification = () => {
-    setIsNotification((prev) => !prev);
-  };
 
+  const openNotification = () => dispatch(setIsNotification(true));
   const logoutHandler = async () => {
     try {
       const { data } = await axios.get(`${SERVER}/api/v1/user/logout`, {

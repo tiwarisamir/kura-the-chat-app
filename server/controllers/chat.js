@@ -47,10 +47,10 @@ const getMyChats = TryCatch(async (req, res, next) => {
         name: groupChat ? name : otherMember.name,
         members: members.reduce((prev, curr) => {
           if (curr._id.toString() !== req.user.toString()) {
-            prev.push(curr._id);
+            prev.push(curr?._id);
           }
           return prev;
-        }),
+        }, []),
       };
     }
   );

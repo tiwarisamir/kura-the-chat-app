@@ -6,20 +6,24 @@ import ChatList from "../specific/ChatList";
 import { samplechats } from "../../constants/SampleData";
 import { useParams } from "react-router-dom";
 import Profile from "../specific/Profile";
-import { useMyChatSQuery } from "../../redux/api/api";
+import { useMyChatsQuery } from "../../redux/api/api";
 import { useDispatch, useSelector } from "react-redux";
 import { setIsMobile } from "../../redux/reducers/misc";
 import { useErrors } from "../../hooks/hook";
+import { getSocket } from "../../socket";
 
 const AppLayout = () => (WrappedComponent) => {
   return (props) => {
+    const socket = getSocket();
+
     const params = useParams();
     const chatId = params.chatId;
     const dispatch = useDispatch();
 
     const { isMobile } = useSelector((state) => state.misc);
+    const { user } = useSelector((state) => state.auth);
 
-    const { isLoading, data, isError, error, refetch } = useMyChatSQuery("");
+    const { isLoading, data, isError, error, refetch } = useMyChatsQuery("");
 
     useErrors([{ isError, error }]);
 
@@ -82,7 +86,7 @@ const AppLayout = () => (WrappedComponent) => {
             }}
             height={"100%"}
           >
-            <Profile />
+            <Profile user={user} />
           </Grid>
         </Grid>
       </>

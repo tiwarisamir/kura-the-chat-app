@@ -35,7 +35,12 @@ cloudinary.config({
 
 const app = express();
 const server = createServer(app);
-const io = new Server(server, {});
+const io = new Server(server, {
+  cors: {
+    origin: process.env.CLIENT_URL,
+    credentials: true,
+  },
+});
 
 app.use(express.json());
 app.use(cookieParser());
@@ -54,7 +59,7 @@ app.get("/", (req, res) => {
   res.send("Helo there");
 });
 
-io.use((socket, next) => {});
+// io.use((socket, next) => {});
 
 io.on("connection", (socket) => {
   const user = {

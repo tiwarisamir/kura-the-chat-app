@@ -102,8 +102,8 @@ const sendFriendRequest = TryCatch(async (req, res, next) => {
 
   const request = await Request.findOne({
     $or: [
-      { sender: req.user, reciver: userId },
-      { sender: userId, reciver: req.user },
+      { sender: req.user, receiver: userId },
+      { sender: userId, receiver: req.user },
     ],
   });
 
