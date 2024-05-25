@@ -141,7 +141,7 @@ const acceptFriendRequest = TryCatch(async (req, res, next) => {
 
     return res.status(200).json({
       success: true,
-      message: "Request deleted successfully",
+      message: "Request rejected successfully",
     });
   }
 

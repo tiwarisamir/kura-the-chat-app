@@ -6,7 +6,12 @@ import express from "express";
 import { createServer } from "http";
 import { Server } from "socket.io";
 import { v4 as uuid } from "uuid";
-import { NEW_MESSAGE } from "./constants/events.js";
+import {
+  NEW_MESSAGE,
+  NEW_MESSAGE_ALERT,
+  START_TYPING,
+  STOP_TYPING,
+} from "./constants/events.js";
 import { getSockets } from "./lib/helper.js";
 import { socketAuth } from "./middlewares/auth.js";
 import { errorMiddleware } from "./middlewares/error.js";
@@ -36,12 +41,15 @@ cloudinary.config({
 
 const app = express();
 const server = createServer(app);
+
 const io = new Server(server, {
   cors: {
     origin: process.env.CLIENT_URL,
     credentials: true,
   },
 });
+
+app.set("io", io);
 
 app.use(express.json());
 app.use(cookieParser());
@@ -98,7 +106,7 @@ io.on("connection", (socket) => {
       message: messageForRealTime,
     });
 
-    io.to(membersSocket).emit(NEW_MESSAGE, { chatId });
+    io.to(membersSocket).emit(NEW_MESSAGE_ALERT, { chatId });
 
     try {
       await Message.create(messageForDB);
@@ -106,6 +114,17 @@ io.on("connection", (socket) => {
       console.log(error);
     }
   });
+
+  socket.on(START_TYPING, ({ members, chatId }) => {
+    const membersSocket = getSockets(members);
+    socket.to(membersSocket).emit(START_TYPING, { chatId });
+  });
+
+  socket.on(STOP_TYPING, ({ members, chatId }) => {
+    const membersSocket = getSockets(members);
+    socket.to(membersSocket).emit(STOP_TYPING, { chatId });
+  });
+
   socket.on("disconnect", () => {
     console.log("user disconnected");
     userSocketIDs.delete(user._id.toString());

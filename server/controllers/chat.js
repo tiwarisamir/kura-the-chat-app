@@ -8,7 +8,13 @@ import {
   emitEvent,
   uploadFilesToCloudinary,
 } from "../utils/features.js";
-import { ALERT, New_ATTACHMENT, REFETCH_CHATS } from "../constants/events.js";
+import {
+  ALERT,
+  NEW_MESSAGE,
+  NEW_MESSAGE_ALERT,
+  New_ATTACHMENT,
+  REFETCH_CHATS,
+} from "../constants/events.js";
 import { getOtherMember } from "../lib/helper.js";
 
 const newGroupChat = TryCatch(async (req, res, next) => {
@@ -149,6 +155,8 @@ const removeMembers = TryCatch(async (req, res, next) => {
   if (chat.members.length <= 3)
     return next(new ErorrHandler("Group must have at least 3 members", 400));
 
+  const allChatMembers = chat.members.map((i) => i.toString());
+
   chat.members = chat.members.filter(
     (member) => member.toString() !== userId.toString()
   );
@@ -162,7 +170,7 @@ const removeMembers = TryCatch(async (req, res, next) => {
     `${userToRemove.name} has been removed from the group`
   );
 
-  emitEvent(req, REFETCH_CHATS, chat.members);
+  emitEvent(req, REFETCH_CHATS, allChatMembers);
 
   return res.status(200).json({
     success: true,
@@ -249,12 +257,12 @@ const sendAttachments = TryCatch(async (req, res, next) => {
 
   const message = await Message.create(messageForDB);
 
-  emitEvent(req, New_ATTACHMENT, chat.members, {
+  emitEvent(req, NEW_MESSAGE, chat.members, {
     message: messageForRealTime,
     chatId,
   });
 
-  emitEvent(req, New_ATTACHMENT, chat.members, { chatId });
+  emitEvent(req, NEW_MESSAGE_ALERT, chat.members, { chatId });
 
   return res.status(200).json({
     success: true,

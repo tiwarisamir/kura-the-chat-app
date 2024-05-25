@@ -105,7 +105,7 @@ const NotificationItems = memo(({ sender, _id, handler }) => {
           }}
         >
           <Button onClick={() => handler({ _id, accept: true })}>Accept</Button>
-          <Button color="error" onClick={() => handler({ _id, accept: true })}>
+          <Button color="error" onClick={() => handler({ _id, accept: false })}>
             Reject
           </Button>
         </Stack>
