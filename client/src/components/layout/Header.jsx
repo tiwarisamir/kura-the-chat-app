@@ -18,7 +18,7 @@ import {
   Notifications as NotificationsIcon,
   Search as SearchIcon,
 } from "@mui/icons-material";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { SERVER } from "../../constants/config";
 import toast from "react-hot-toast";
@@ -81,7 +81,7 @@ const Header = () => {
               variant="h6"
               sx={{ display: { xs: "none", sm: "block" } }}
             >
-              Kura
+              <Link to={"/"}>Kura</Link>
             </Typography>
 
             <Box sx={{ display: { sm: "none", xs: "block" } }}>
