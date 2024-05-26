@@ -81,7 +81,15 @@ const Header = () => {
               variant="h6"
               sx={{ display: { xs: "none", sm: "block" } }}
             >
-              <Link to={"/"}>Kura</Link>
+              <Link
+                to={"/"}
+                style={{
+                  textDecoration: "none",
+                  color: "inherit",
+                }}
+              >
+                Kura
+              </Link>
             </Typography>
 
             <Box sx={{ display: { sm: "none", xs: "block" } }}>
