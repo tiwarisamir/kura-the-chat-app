@@ -23,7 +23,7 @@ const adminLogin = TryCatch(async (req, res, next) => {
     })
     .json({
       success: true,
-      message: "Authenticated Successfully, Welcom BOSS",
+      message: "Authenticated Successfully, Welcome BOSS",
     });
 });
 
@@ -53,7 +53,7 @@ const allUsers = TryCatch(async (req, res) => {
     users.map(async ({ name, username, avatar, _id }) => {
       const [groups, friends] = await Promise.all([
         Chat.countDocuments({ groupChat: true, members: _id }),
-        Chat.countDocuments({ grpupChat: false, members: _id }),
+        Chat.countDocuments({ groupChat: false, members: _id }),
       ]);
 
       return {
@@ -69,7 +69,7 @@ const allUsers = TryCatch(async (req, res) => {
 
   return res.status(200).json({
     status: "success",
-    data: transformedUsers,
+    users: transformedUsers,
   });
 });
 
@@ -178,7 +178,7 @@ const getDashboardStats = TryCatch(async (req, res) => {
 
   return res.status(200).json({
     success: true,
-    messages: stats,
+    stats,
   });
 });
 

@@ -1,7 +1,6 @@
 import { Stack } from "@mui/material";
 import React from "react";
 import ChatItem from "../shared/ChatItem";
-import { SouthAmerica } from "@mui/icons-material";
 
 const ChatList = ({
   w = "100%",
@@ -25,7 +24,9 @@ const ChatList = ({
           ({ chatId }) => chatId === _id
         );
 
-        const isOnline = members?.some((member) => onlineUsers.includes(_id));
+        const isOnline = members?.some((member) =>
+          onlineUsers.includes(member)
+        );
 
         return (
           <ChatItem

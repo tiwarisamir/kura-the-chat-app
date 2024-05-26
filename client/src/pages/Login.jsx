@@ -21,6 +21,7 @@ import toast from "react-hot-toast";
 
 const Login = () => {
   const [isLogin, setIsLogin] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   const toggleLogin = () => {
     setIsLogin((prev) => !prev);
@@ -36,6 +37,9 @@ const Login = () => {
   const dispatch = useDispatch();
 
   const handleLogin = async (e) => {
+    e.preventDefault();
+    const toastId = toast.loading("Logging In...");
+    setIsLoading(true);
     const config = {
       withCredentials: true,
       headers: {
@@ -52,15 +56,22 @@ const Login = () => {
         },
         config
       );
-      dispatch(userExists(true));
-      toast.success(data.message);
+      dispatch(userExists(data.user));
+      toast.success(data.message, { id: toastId });
     } catch (error) {
-      toast.error(error?.response?.data?.message || "Something Went Wrong");
+      toast.error(error?.response?.data?.message || "Something Went Wrong", {
+        id: toastId,
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleSignUp = async (e) => {
     e.preventDefault();
+    const toastId = toast.loading("Signing Up...");
+
+    setIsLoading(true);
 
     const config = {
       withCredentials: true,
@@ -83,10 +94,14 @@ const Login = () => {
         config
       );
 
-      dispatch(userExists(true));
-      toast.success(data.message);
+      dispatch(userExists(data.user));
+      toast.success(data.message, { id: toastId });
     } catch (error) {
-      toast.error(error?.response?.data?.message || "Something Went Wrong");
+      toast.error(error?.response?.data?.message || "Something Went Wrong", {
+        id: toastId,
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -147,6 +162,7 @@ const Login = () => {
                 color="primary"
                 type="submit"
                 fullWidth
+                disabled={isLoading}
               >
                 Login
               </Button>
@@ -154,7 +170,12 @@ const Login = () => {
               <Typography textAlign={"center"} m={"1rem"}>
                 OR
               </Typography>
-              <Button fullWidth variant="text" onClick={toggleLogin}>
+              <Button
+                fullWidth
+                variant="text"
+                onClick={toggleLogin}
+                disabled={isLoading}
+              >
                 Sign Up Instead
               </Button>
             </form>
@@ -266,6 +287,7 @@ const Login = () => {
                 color="primary"
                 type="submit"
                 fullWidth
+                disabled={isLoading}
               >
                 Sign Up
               </Button>
@@ -273,7 +295,12 @@ const Login = () => {
               <Typography textAlign={"center"} m={"1rem"}>
                 OR
               </Typography>
-              <Button fullWidth variant="text" onClick={toggleLogin}>
+              <Button
+                fullWidth
+                variant="text"
+                onClick={toggleLogin}
+                disabled={isLoading}
+              >
                 Login Instead
               </Button>
             </form>

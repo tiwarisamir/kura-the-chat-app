@@ -9,15 +9,13 @@ import {
   Typography,
 } from "@mui/material";
 import React, { memo } from "react";
-import { sampleNotification } from "../../constants/SampleData";
+import { useDispatch, useSelector } from "react-redux";
+import { useAsyncMutation, useErrors } from "../../hooks/hook";
 import {
   useAcceptFriendRequestMutation,
   useGetNotificationsQuery,
 } from "../../redux/api/api";
-import { useErrors } from "../../hooks/hook";
-import { useDispatch, useSelector } from "react-redux";
 import { setIsNotification } from "../../redux/reducers/misc";
-import toast from "react-hot-toast";
 
 const Notifications = () => {
   const dispatch = useDispatch();
@@ -26,20 +24,12 @@ const Notifications = () => {
 
   const { isLoading, data, error, isError } = useGetNotificationsQuery();
 
-  const [acceptRequest] = useAcceptFriendRequestMutation();
+  const [acceptRequest] = useAsyncMutation(useAcceptFriendRequestMutation);
 
   const friendRequestHandler = async ({ _id, accept }) => {
     dispatch(setIsNotification(false));
 
-    try {
-      const res = await acceptRequest({ requestId: _id, accept });
-
-      if (res?.data?.success) {
-        toast.success(res.data.message);
-      } else {
-        toast.error("Something went wrong");
-      }
-    } catch (error) {}
+    await await acceptRequest("Accepting...", { requestId: _id, accept });
   };
 
   const closeHandler = () => dispatch(setIsNotification(false));

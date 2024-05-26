@@ -1,7 +1,16 @@
 import {
+  Add as AddIcon,
+  Delete as DeleteIcon,
+  Done as DoneIcon,
+  Edit as EditIcon,
+  KeyboardBackspace as KeyboardBackspaceIcon,
+  Menu as MenuIcon,
+} from "@mui/icons-material";
+import {
   Backdrop,
   Box,
   Button,
+  CircularProgress,
   Drawer,
   Grid,
   IconButton,
@@ -11,30 +20,21 @@ import {
   Typography,
 } from "@mui/material";
 import React, { Suspense, lazy, memo, useEffect, useState } from "react";
-import { matBlack } from "../constants/color";
-import {
-  Add as AddIcon,
-  Delete as DeleteIcon,
-  Done as DoneIcon,
-  Edit as EditIcon,
-  KeyboardBackspace as KeyboardBackspaceIcon,
-  Menu as MenuIcon,
-} from "@mui/icons-material";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Link } from "../components/styles/StyledComponents";
+import { LayoutLoader } from "../components/layout/Loaders";
 import AvatarCard from "../components/shared/AvatarCard";
-import { sampleUsers, samplechats } from "../constants/SampleData";
 import UserItem from "../components/shared/UserItem";
+import { Link } from "../components/styles/StyledComponents";
+import { matBlack } from "../constants/color";
+import { useAsyncMutation, useErrors } from "../hooks/hook";
 import {
-  useAddGroupMemberMutation,
   useChatDetailsQuery,
+  useDeleteChatMutation,
   useMyGroupsQuery,
   useRemoveGroupMemberMutation,
   useRenameGroupMutation,
 } from "../redux/api/api";
-import { useAsyncMutation, useErrors } from "../hooks/hook";
-import { LayoutLoader } from "../components/layout/Loaders";
-import { useDispatch, useSelector } from "react-redux";
 import { setIsaddMember } from "../redux/reducers/misc";
 const ConfirmDeleteDialog = lazy(() =>
   import("../components/dialogs/ConfirmDeleteDialog")
@@ -63,6 +63,10 @@ const Groups = () => {
 
   const [removeMember, isLoadingRemoveMember] = useAsyncMutation(
     useRemoveGroupMemberMutation
+  );
+
+  const [deleteGroup, isLoadingDeleteGroup] = useAsyncMutation(
+    useDeleteChatMutation
   );
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -124,7 +128,6 @@ const Groups = () => {
 
   const openConfirmDeleteHandler = () => {
     setconfirmDeleteDialog(true);
-    console.log("Delete Group");
   };
 
   const closeConfirmDeleteHandler = () => {
@@ -136,7 +139,9 @@ const Groups = () => {
   };
 
   const deleteHandler = () => {
-    console.log("Delete Handler");
+    deleteGroup("Deleting Group...", chatId);
+    closeConfirmDeleteHandler();
+    navigate("/");
   };
 
   const removeMemberHandler = (userId) => {
@@ -305,21 +310,25 @@ const Groups = () => {
               overflow={"auto"}
             >
               {/* members */}
-              {members.map((i) => {
-                return (
-                  <UserItem
-                    key={i._id}
-                    user={i}
-                    isAdded
-                    styling={{
-                      boxShadow: "0 0 0.5rem  rgba(0,0,0,0.2)",
-                      padding: "1rem 2rem",
-                      borderRadius: "1rem",
-                    }}
-                    handler={removeMemberHandler}
-                  />
-                );
-              })}
+              {isLoadingRemoveMember ? (
+                <CircularProgress />
+              ) : (
+                members.map((i) => {
+                  return (
+                    <UserItem
+                      key={i._id}
+                      user={i}
+                      isAdded
+                      styling={{
+                        boxShadow: "0 0 0.5rem  rgba(0,0,0,0.2)",
+                        padding: "1rem 2rem",
+                        borderRadius: "1rem",
+                      }}
+                      handler={removeMemberHandler}
+                    />
+                  );
+                })
+              )}
             </Stack>
             {ButtonGroup}
           </>
@@ -337,7 +346,7 @@ const Groups = () => {
           <ConfirmDeleteDialog
             open={confirmDeleteDialog}
             handleClose={closeConfirmDeleteHandler}
-            deleteHandler={deleteHandler}
+            deleteHandler={() => deleteHandler(chatId)}
           />
         </Suspense>
       )}

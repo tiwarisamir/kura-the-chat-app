@@ -7,15 +7,14 @@ import {
   Typography,
 } from "@mui/material";
 import React, { useState } from "react";
-import { sampleUsers } from "../../constants/SampleData";
-import UserItem from "../shared/UserItem";
+import { useDispatch, useSelector } from "react-redux";
+import { useAsyncMutation, useErrors } from "../../hooks/hook";
 import {
   useAddGroupMemberMutation,
   useAvailableFriendsQuery,
 } from "../../redux/api/api";
-import { useAsyncMutation, useErrors } from "../../hooks/hook";
-import { useDispatch, useSelector } from "react-redux";
 import { setIsaddMember } from "../../redux/reducers/misc";
+import UserItem from "../shared/UserItem";
 
 const AddMemberDialog = ({ chatId }) => {
   const dispatch = useDispatch();
