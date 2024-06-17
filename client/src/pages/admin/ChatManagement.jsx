@@ -1,5 +1,5 @@
 import { useFetchData } from "6pp";
-import { Avatar, Stack } from "@mui/material";
+import { Avatar, Skeleton, Stack } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import AdminLayout from "../../components/layout/AdminLayout";
 import AvatarCard from "../../components/shared/AvatarCard";
