@@ -4,7 +4,7 @@ Kura is a cutting-edge real-time messaging platform built with a robust tech sta
 
 ### 🏠 [Visit Website](https://kura-liard.vercel.app/)
 
-[![MasterHead](/client/public/kura.JPG)](https://www.samirt.com.np)
+[![MasterHead](/client/public/kura.JPG)](https://kura-liard.vercel.app)
 
 ## Installation
 
@@ -114,7 +114,7 @@ git push origin feature/AmazingFeature
 
 - **Backend Technologies:**
 
-  - `exoress`
+  - `express`
   - `mongoose`
   - `multer`
   - `socket.io`
